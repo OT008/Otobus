@@ -265,10 +265,10 @@
 
           // Tabloya güncelleme yap
           const table = document.querySelector("table tbody");
-          table.rows[2].cells[0].innerHTML = formatTime(previous61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + previous61_Ardicli_Diff + '</span>';
-          table.rows[2].cells[1].innerHTML = formatTime(previous61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + previous61_SuDeposu_Diff + '</span>';
-          table.rows[2].cells[2].innerHTML = formatTime(previous51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + previous51_Ardicli_Diff + '</span>';
-          table.rows[2].cells[3].innerHTML = formatTime(previous51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + previous51_SuDeposu_Diff + '</span>';
+          table.rows[2].cells[0].innerHTML = formatTime(previous61_Ardicli) + '<span style="color: red; font-weight: bold;"><br>' + previous61_Ardicli_Diff + '</span>';
+          table.rows[2].cells[1].innerHTML = formatTime(previous61_SuDeposu) + '<span style="color: red; font-weight: bold;"><br>' + previous61_SuDeposu_Diff + '</span>';
+          table.rows[2].cells[2].innerHTML = formatTime(previous51_Ardicli) + '<span style="color: red; font-weight: bold;"><br>' + previous51_Ardicli_Diff + '</span>';
+          table.rows[2].cells[3].innerHTML = formatTime(previous51_SuDeposu) + '<span style="color: red; font-weight: bold;"><br>' + previous51_SuDeposu_Diff + '</span>';
 	      
           table.rows[3].cells[0].innerHTML = formatTime(next61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + next61_Ardicli_Diff + '</span>';
           table.rows[3].cells[1].innerHTML = formatTime(next61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + next61_SuDeposu_Diff + '</span>';
