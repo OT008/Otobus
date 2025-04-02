@@ -90,6 +90,12 @@
             <td>Ardıçlı Toki</td>
             <td>Su Deposu</td>
           </tr>
+	  <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+	  </tr>
           <tr>
             <td></td>
             <td></td>
@@ -206,7 +212,17 @@
               schedule_51_Ardicli = scheduleSunday_51_Ardicli;
               schedule_51_SuDeposu = scheduleSunday_51_SuDeposu;
           }
-
+          //önceki saat
+	  const previous61_Ardicli = getPreviousTime(schedule_61_Ardicli, currentTime);
+          const previous61_SuDeposu = getPreviousTime(schedule_61_SuDeposu, currentTime);
+          const previous51_Ardicli = getPreviousTime(schedule_51_Ardicli, currentTime);
+          const previous51_SuDeposu = getPreviousTime(schedule_51_SuDeposu, currentTime);
+		  
+		  const previous61_Ardicli_Diff = currentTime - previous61_Ardicli;
+		  const previous61_SuDeposu_Diff = currentTime - previous61_SuDeposu;
+		  const previous51_Ardicli_Diff = currentTime - previous51_Ardicli;
+		  const previous51_SuDeposu_Diff = currentTime - previous51_SuDeposu;
+		  
           // En yakın büyük saatleri bul
           const next61_Ardicli = getNextAvailableTime(schedule_61_Ardicli, currentTime);
           const next61_SuDeposu = getNextAvailableTime(schedule_61_SuDeposu, currentTime);
@@ -240,20 +256,25 @@
 
           // Tabloya güncelleme yap
           const table = document.querySelector("table tbody");
-          table.rows[2].cells[0].innerHTML = formatTime(next61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + next61_Ardicli_Diff + '</span>';
-          table.rows[2].cells[1].innerHTML = formatTime(next61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + next61_SuDeposu_Diff + '</span>';
-          table.rows[2].cells[2].innerHTML = formatTime(next51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + next51_Ardicli_Diff + '</span>';
-          table.rows[2].cells[3].innerHTML = formatTime(next51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + next51_SuDeposu_Diff + '</span>';
+          table.rows[2].cells[0].innerHTML = formatTime(previous61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + previous61_Ardicli_Diff + '</span>';
+          table.rows[2].cells[1].innerHTML = formatTime(previous61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + previous61_SuDeposu_Diff + '</span>';
+          table.rows[2].cells[2].innerHTML = formatTime(previous51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + previous51_Ardicli_Diff + '</span>';
+          table.rows[2].cells[3].innerHTML = formatTime(previous51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + previous51_SuDeposu_Diff + '</span>';
+	      
+          table.rows[3].cells[0].innerHTML = formatTime(next61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + next61_Ardicli_Diff + '</span>';
+          table.rows[3].cells[1].innerHTML = formatTime(next61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + next61_SuDeposu_Diff + '</span>';
+          table.rows[3].cells[2].innerHTML = formatTime(next51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + next51_Ardicli_Diff + '</span>';
+          table.rows[3].cells[3].innerHTML = formatTime(next51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + next51_SuDeposu_Diff + '</span>';
 
-          table.rows[3].cells[0].innerHTML = formatTime(nextt61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nextt61_Ardicli_Diff + '</span>';
-          table.rows[3].cells[1].innerHTML = formatTime(nextt61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nextt61_SuDeposu_Diff + '</span>';
-          table.rows[3].cells[2].innerHTML = formatTime(nextt51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nextt51_Ardicli_Diff + '</span>';
-          table.rows[3].cells[3].innerHTML = formatTime(nextt51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nextt51_SuDeposu_Diff + '</span>';
+          table.rows[4].cells[0].innerHTML = formatTime(nextt61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nextt61_Ardicli_Diff + '</span>';
+          table.rows[4].cells[1].innerHTML = formatTime(nextt61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nextt61_SuDeposu_Diff + '</span>';
+          table.rows[4].cells[2].innerHTML = formatTime(nextt51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nextt51_Ardicli_Diff + '</span>';
+          table.rows[4].cells[3].innerHTML = formatTime(nextt51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nextt51_SuDeposu_Diff + '</span>';
 
-          table.rows[4].cells[0].innerHTML = formatTime(nexttt61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nexttt61_Ardicli_Diff + '</span>';
-          table.rows[4].cells[1].innerHTML = formatTime(nexttt61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nexttt61_SuDeposu_Diff + '</span>';
-          table.rows[4].cells[2].innerHTML = formatTime(nexttt51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nexttt51_Ardicli_Diff + '</span>';
-          table.rows[4].cells[3].innerHTML = formatTime(nexttt51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nexttt51_SuDeposu_Diff + '</span>';
+          table.rows[5].cells[0].innerHTML = formatTime(nexttt61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nexttt61_Ardicli_Diff + '</span>';
+          table.rows[5].cells[1].innerHTML = formatTime(nexttt61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nexttt61_SuDeposu_Diff + '</span>';
+          table.rows[5].cells[2].innerHTML = formatTime(nexttt51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nexttt51_Ardicli_Diff + '</span>';
+          table.rows[5].cells[3].innerHTML = formatTime(nexttt51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nexttt51_SuDeposu_Diff + '</span>';
       }
 
       function formatTime(minutes) {
