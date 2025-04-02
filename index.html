@@ -142,7 +142,12 @@
       updateDateTime();  // İlk güncelleme
 	    
       function getPreviousTime(schedule, currentTime) {
-          return schedule.filter(time => time < currentTime).pop() || "-";
+	      for (let t = currentTime - 1; t >= 0; t--) {
+		      if (schedule.includes(t)) {
+			      return t;
+		      }
+	      }
+      return "-";
       }
       function getNextAvailableTime(schedule, currentTime) {
           return schedule.find(time => time > currentTime) || "-"; // Eğer sonraki saat yoksa "-" koy
