@@ -3,297 +3,304 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gün, Saat ve Tablo</title>
+    <meta name="theme-color" content="#0f766e" />
+    <title>Otobüs Tarifesi</title>
     <style>
+      :root {
+        color-scheme: light;
+        --primary: #0f766e;
+        --primary-dark: #115e59;
+        --surface: #ffffff;
+        --background: #f0fdfa;
+        --text: #16302d;
+        --muted: #64748b;
+        --border: #d7e5e3;
+        --past: #dc2626;
+        --next: #15803d;
+      }
+
+      * { box-sizing: border-box; }
+
       body {
-          font-family: Arial, sans-serif;
-          background-color: #f0f0f0;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          margin: 0;
+        margin: 0;
+        min-height: 100vh;
+        padding: 18px 12px 30px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background: linear-gradient(160deg, #ccfbf1 0, var(--background) 35%, #f8fafc 100%);
       }
 
-      .container {
-          text-align: center;
-          padding: 20px;
-          background-color: #fff;
-          border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-          margin-bottom: 20px;
+      main { width: min(100%, 920px); margin: 0 auto; }
+
+      .clock {
+        padding: 18px;
+        text-align: center;
+        color: white;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(15, 118, 110, .22);
       }
 
-      #date {
-          font-size: 24px;
-          font-weight: bold;
+      #date { font-size: clamp(1rem, 4vw, 1.25rem); font-weight: 650; }
+      #time { margin-top: 3px; font-size: clamp(2rem, 10vw, 3.25rem); font-weight: 800; letter-spacing: 1px; }
+      #day-type { margin-top: 3px; font-size: .84rem; opacity: .85; }
+
+      #status {
+        margin: 18px 4px 8px;
+        text-align: center;
+        color: var(--muted);
+        font-size: .92rem;
       }
 
-      #time {
-          font-size: 30px;
-          margin-top: 10px;
+      .routes { display: grid; gap: 14px; margin-top: 14px; }
+
+      .route-card {
+        overflow: hidden;
+        background: var(--surface);
+        border: 1px solid rgba(15, 118, 110, .13);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
       }
 
-      .table-container {
-          width: 80%;
-          margin-top: 30px;
-          padding: 20px;
-          background-color: #fff;
-          border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-          overflow: hidden;
+      .route-title {
+        margin: 0;
+        padding: 11px 14px;
+        color: white;
+        background: var(--primary);
+        font-size: 1.3rem;
+        text-align: center;
       }
 
-      table {
-          width: 100%;
-          border-collapse: collapse;
-          text-align: center;
+      .directions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .directions.single { grid-template-columns: 1fr; }
+      .direction { padding: 13px 10px 15px; min-width: 0; }
+      .direction + .direction { border-left: 1px solid var(--border); }
+
+      .direction h3 {
+        min-height: 40px;
+        margin: 0 0 9px;
+        display: grid;
+        place-items: center;
+        font-size: clamp(.82rem, 3.7vw, 1rem);
+        text-align: center;
+        line-height: 1.2;
       }
 
-      table, th, td {
-          border: 1px solid #ddd;
+      .trip-list { display: grid; gap: 7px; }
+      .trip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        min-height: 43px;
+        padding: 8px 10px;
+        background: #f8fafc;
+        border: 1px solid #edf2f7;
+        border-radius: 10px;
       }
 
-      th, td {
-          padding: 10px;
-          font-size: 16px;
-      }
+      .trip-time { font-size: clamp(1rem, 5vw, 1.25rem); font-weight: 800; font-variant-numeric: tabular-nums; }
+      .trip-diff { font-size: clamp(.72rem, 3.3vw, .86rem); font-weight: 750; white-space: nowrap; }
+      .trip.past .trip-diff { color: var(--past); }
+      .trip.next { background: #f0fdf4; border-color: #bbf7d0; }
+      .trip.next .trip-diff { color: var(--next); }
+      .empty { padding: 24px 8px; color: var(--muted); text-align: center; }
+      .error { color: #b91c1c !important; }
 
-      th {
-          background-color: #f4f4f4;
-      }
-
-      .merged {
-          text-align: center;
-          vertical-align: middle;
-          font-weight: bold;
+      @media (min-width: 720px) {
+        body { padding-top: 28px; }
+        .routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .route-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div id="date"></div>
-      <div id="time"></div>
-    </div>
+    <main>
+      <section class="clock" aria-label="Tarih ve saat">
+        <div id="date"></div>
+        <div id="time"></div>
+        <div id="day-type"></div>
+      </section>
 
-    <div class="table-container">
-      <table>
-        <tbody>
-          <tr>
-            <td colspan="2" class="merged">61</td>
-            <td colspan="2" class="merged">51</td>
-          </tr>
-          <tr>
-            <td>Ardıçlı Toki</td>
-            <td>Su Deposu</td>
-            <td>Ardıçlı Toki</td>
-            <td>Su Deposu</td>
-          </tr>
-	  <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-	  </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <div id="status">Tarife yükleniyor…</div>
+      <section id="routes" class="routes" aria-live="polite"></section>
+    </main>
 
     <script>
-      function updateDateTime() {
-          const now = new Date();
+      const DATA_FILE = "otobussaat.txt";
+      const ROUTES = {
+        "61": ["ARDIÇLI TOKİ", "JAPON PARKI"],
+        "51": ["ARDIÇLI TOKİ", "JAPON PARKI"],
+        "49": ["ARDIÇLI TOKİ"]
+      };
 
-          const days = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-          const months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-          const dayOfWeek = days[now.getDay()];
-          const day = now.getDate();
-          const month = months[now.getMonth()];
-          const year = now.getFullYear();
+      let schedules = {};
+      let loadError = "";
 
-          document.getElementById('date').textContent = `${dayOfWeek}, ${day} ${month} ${year}`;
-
-          const hours = String(now.getHours()).padStart(2, '0');
-          const minutes = String(now.getMinutes()).padStart(2, '0');
-          const seconds = String(now.getSeconds()).padStart(2, '0');
-
-          document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+      function repairTurkish(text) {
+        const replacements = {
+          "Ä°": "İ", "Ä±": "ı", "ÄŸ": "ğ", "Äž": "Ğ", "ÅŸ": "ş", "Å": "Ş",
+          "Ã‡": "Ç", "Ã§": "ç", "Ã–": "Ö", "Ã¶": "ö", "Ãœ": "Ü", "Ã¼": "ü"
+        };
+        return text.replace(/Ä°|Ä±|ÄŸ|Äž|ÅŸ|Å|Ã‡|Ã§|Ã–|Ã¶|Ãœ|Ã¼/g, value => replacements[value]);
       }
 
-      setInterval(updateDateTime, 1000);
-      updateDateTime();  // İlk güncelleme
-	    
-      function getPreviousTime(schedule, currentTime) {
-	      for (let t = currentTime - 1; t >= 0; t--) {
-		      if (schedule.includes(t)) {
-			      return t;
-		      }
-	      }
-      return "-";
-      }
-      function getNextAvailableTime(schedule, currentTime) {
-          return schedule.find(time => time > currentTime) || "-"; // Eğer sonraki saat yoksa "-" koy
+      function key(value) {
+        return repairTurkish(value).trim().replace(/\s+/g, " ").toLocaleUpperCase("tr-TR");
       }
 
-      function updateSchedule() {
-          const now = new Date();
-          const currentTime = now.getHours() * 60 + now.getMinutes(); // Şu anki dakika cinsinden zaman
-          const dayOfWeek = now.getDay();
+      function parseSchedule(text) {
+        const result = {};
+        let route = "";
+        let day = "";
+        let direction = "";
 
-          const scheduleWeekday_61_Ardicli = [
-          360, 385, 400, 415, 425, 435, 450, 465, 475, 490, 500, 520, 540, 570, 600, 630, 660, 690, 720, 740, 760, 780, 800, 820, 840, 860, 885, 895, 910, 920, 940, 960, 980, 995, 1010, 1025, 1040, 1055, 1070, 1085, 1100, 1120, 1140, 1160, 1180, 1200, 1230, 1260, 1300, 1340, 1380, 1420
-          ];
+        for (const rawLine of text.split(/\r?\n/)) {
+          const line = repairTurkish(rawLine).trim();
+          if (!line) continue;
 
-          const scheduleWeekday_61_SuDeposu = [
-          380, 405, 425, 440, 450, 460, 475, 490, 500, 515, 525, 545, 565, 595, 625, 655, 685, 715, 745, 765, 785, 805, 825, 845, 865, 885, 910, 920, 935, 945, 965, 985, 1005, 1020, 1035, 1050, 1065, 1080, 1095, 1110, 1125, 1145, 1165, 1185, 1205, 1225, 1255, 1285, 1325, 1360, 1400, 0
-          ];
-
-          const scheduleWeekday_51_Ardicli = [
-          370, 390, 410, 420, 430, 440, 460, 470, 480, 495, 510, 530, 555, 585, 615, 645, 675, 705, 730, 750, 770, 790, 810, 830, 850, 870, 890, 900, 915, 930, 950, 970, 990, 1005, 1020, 1035, 1050, 1065, 1080, 1095, 1110, 1130, 1150, 1170, 1190, 1215, 1245, 1280, 1320, 1360, 1400, 0
-          ];
-
-          const scheduleWeekday_51_SuDeposu = [
-          390, 415, 435, 445, 455, 465, 485, 495, 505, 520, 535, 555, 580, 610, 640, 670, 700, 730, 755, 775, 795, 815, 835, 855, 875, 895, 915, 925, 940, 955, 975, 995, 1015, 1030, 1045, 1060, 1075, 1090, 1105, 1120, 1135, 1155, 1175, 1195, 1215, 1240, 1270, 1305, 1340, 1380, 1420, 35
-          ];
-
-          const scheduleSaturday_61_Ardicli = [
-	  360, 385, 405, 420, 440, 460, 480, 510, 540, 570, 600, 630, 660, 680, 700, 720, 740, 760, 780, 800, 820, 840, 860, 880, 900, 920, 940, 960, 980, 1000, 1020, 1040, 1060, 1080, 1100, 1110, 1120, 1140, 1160, 1180, 1200, 1230, 1260, 1300, 1340, 1380, 1420
-          ];
-
-          const scheduleSaturday_61_SuDeposu = [
-          380, 410, 430, 445, 465, 485, 505, 535, 565, 595, 625, 655, 685, 705, 725, 745, 765, 785, 805, 825, 845, 865, 885, 905, 925, 945, 965, 985, 1005, 1025, 1045, 1065, 1085, 1105, 1125, 1135, 1145, 1165, 1185, 1205, 1225, 1255, 1285, 1325, 1360, 1400, 0
-          ];
-
-          const scheduleSaturday_51_Ardicli = [
-          375, 395, 415, 430, 450, 470, 495, 525, 555, 585, 615, 645, 670, 690, 710, 730, 750, 770, 790, 810, 830, 850, 870, 890, 910, 930, 950, 970, 990, 1010, 1030, 1050, 1070, 1090, 1105, 1115, 1130, 1150, 1170, 1190, 1215, 1245, 1280, 1320, 1360, 1400, 0
-          ];
-
-          const scheduleSaturday_51_SuDeposu = [
-          400, 420, 440, 455, 475, 495, 520, 550, 580, 610, 640, 670, 695, 715, 735, 755, 775, 795, 815, 835, 855, 875, 895, 915, 935, 955, 975, 995, 1015, 1035, 1055, 1075, 1095, 1115, 1130, 1140, 1155, 1175, 1195, 1215, 1240, 1270, 1305, 1340, 1380, 1420, 35
-          ];
-          const scheduleSunday_61_Ardicli = [
-          420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720, 750, 780, 810, 840, 870, 900, 930, 960, 990, 1020, 1050, 1080, 1110, 1140, 1170, 1200, 1240, 1290, 1350, 1410
-          ];
-          const scheduleSunday_61_SuDeposu = [
-          440, 475, 505, 535, 565, 595, 625, 655, 685, 715, 745, 775, 805, 835, 865, 895, 925, 955, 985, 1015, 1045, 1075, 1105, 1135, 1165, 1195, 1225, 1265, 1315, 1370, 1430
-          ];
-          const scheduleSunday_51_Ardicli = [
-          435, 465, 495, 525, 555, 585, 615, 645, 675, 705, 735, 765, 795, 825, 855, 885, 915, 945, 975, 1005, 1035, 1065, 1095, 1125, 1155, 1185, 1220, 1260, 1320, 1380, 0
-          ];
-          const scheduleSunday_51_SuDeposu = [
-          460, 490, 520, 550, 580, 610, 640, 670, 700, 730, 760, 790, 820, 850, 880, 910, 940, 970, 1000, 1030, 1060, 1090, 1120, 1150, 1180, 1210, 1245, 1285, 1340, 1400, 35
-          ];
-
-          let schedule_61_Ardicli, schedule_61_SuDeposu, schedule_51_Ardicli, schedule_51_SuDeposu;
-
-          if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-              schedule_61_Ardicli = scheduleWeekday_61_Ardicli;
-              schedule_61_SuDeposu = scheduleWeekday_61_SuDeposu;
-              schedule_51_Ardicli = scheduleWeekday_51_Ardicli;
-              schedule_51_SuDeposu = scheduleWeekday_51_SuDeposu;
-          } else if (dayOfWeek === 6) {
-              schedule_61_Ardicli = scheduleSaturday_61_Ardicli;
-              schedule_61_SuDeposu = scheduleSaturday_61_SuDeposu;
-              schedule_51_Ardicli = scheduleSaturday_51_Ardicli;
-              schedule_51_SuDeposu = scheduleSaturday_51_SuDeposu;
-          } else {
-              schedule_61_Ardicli = scheduleSunday_61_Ardicli;
-              schedule_61_SuDeposu = scheduleSunday_61_SuDeposu;
-              schedule_51_Ardicli = scheduleSunday_51_Ardicli;
-              schedule_51_SuDeposu = scheduleSunday_51_SuDeposu;
+          if (/^\d+$/.test(line)) {
+            route = line;
+            day = "";
+            direction = "";
+            result[route] ||= {};
+            continue;
           }
-          //önceki saat
-	  const previous61_Ardicli = getPreviousTime(schedule_61_Ardicli, currentTime);
-          const previous61_SuDeposu = getPreviousTime(schedule_61_SuDeposu, currentTime);
-          const previous51_Ardicli = getPreviousTime(schedule_51_Ardicli, currentTime);
-          const previous51_SuDeposu = getPreviousTime(schedule_51_SuDeposu, currentTime);
-		  
-		  const previous61_Ardicli_Diff = currentTime - previous61_Ardicli;
-		  const previous61_SuDeposu_Diff = currentTime - previous61_SuDeposu;
-		  const previous51_Ardicli_Diff = currentTime - previous51_Ardicli;
-		  const previous51_SuDeposu_Diff = currentTime - previous51_SuDeposu;
-		  
-          // En yakın büyük saatleri bul
-          const next61_Ardicli = getNextAvailableTime(schedule_61_Ardicli, currentTime);
-          const next61_SuDeposu = getNextAvailableTime(schedule_61_SuDeposu, currentTime);
-          const next51_Ardicli = getNextAvailableTime(schedule_51_Ardicli, currentTime);
-          const next51_SuDeposu = getNextAvailableTime(schedule_51_SuDeposu, currentTime);
-		  
-		  const next61_Ardicli_Diff = next61_Ardicli - currentTime;
-		  const next61_SuDeposu_Diff = next61_SuDeposu - currentTime;
-		  const next51_Ardicli_Diff = next51_Ardicli - currentTime;
-		  const next51_SuDeposu_Diff = next51_SuDeposu - currentTime;
-		  
-          const nextt61_Ardicli = getNextAvailableTime(schedule_61_Ardicli, next61_Ardicli);
-          const nextt61_SuDeposu = getNextAvailableTime(schedule_61_SuDeposu, next61_SuDeposu);
-          const nextt51_Ardicli = getNextAvailableTime(schedule_51_Ardicli, next51_Ardicli);
-          const nextt51_SuDeposu = getNextAvailableTime(schedule_51_SuDeposu, next51_SuDeposu);
-		  
-		  const nextt61_Ardicli_Diff = nextt61_Ardicli - currentTime;
-		  const nextt61_SuDeposu_Diff = nextt61_SuDeposu - currentTime;
-		  const nextt51_Ardicli_Diff = nextt51_Ardicli - currentTime;
-		  const nextt51_SuDeposu_Diff = nextt51_SuDeposu - currentTime;
 
-          const nexttt61_Ardicli = getNextAvailableTime(schedule_61_Ardicli, nextt61_Ardicli);
-          const nexttt61_SuDeposu = getNextAvailableTime(schedule_61_SuDeposu, nextt61_SuDeposu);
-          const nexttt51_Ardicli = getNextAvailableTime(schedule_51_Ardicli, nextt51_Ardicli);
-          const nexttt51_SuDeposu = getNextAvailableTime(schedule_51_SuDeposu, nextt51_SuDeposu);
-		  
-		  const nexttt61_Ardicli_Diff = nexttt61_Ardicli - currentTime;
-		  const nexttt61_SuDeposu_Diff = nexttt61_SuDeposu - currentTime;
-		  const nexttt51_Ardicli_Diff = nexttt51_Ardicli - currentTime;
-		  const nexttt51_SuDeposu_Diff = nexttt51_SuDeposu - currentTime;
+          const lineKey = key(line);
+          if (["HAFTA İÇİ", "CUMARTESİ", "PAZAR"].includes(lineKey)) {
+            day = lineKey;
+            direction = "";
+            if (route) result[route][day] ||= {};
+            continue;
+          }
 
-          // Tabloya güncelleme yap
-          const table = document.querySelector("table tbody");
-          table.rows[2].cells[0].innerHTML = formatTime(previous61_Ardicli) + '<span style="color: red; font-weight: bold;"><br>' + previous61_Ardicli_Diff + '</span>';
-          table.rows[2].cells[1].innerHTML = formatTime(previous61_SuDeposu) + '<span style="color: red; font-weight: bold;"><br>' + previous61_SuDeposu_Diff + '</span>';
-          table.rows[2].cells[2].innerHTML = formatTime(previous51_Ardicli) + '<span style="color: red; font-weight: bold;"><br>' + previous51_Ardicli_Diff + '</span>';
-          table.rows[2].cells[3].innerHTML = formatTime(previous51_SuDeposu) + '<span style="color: red; font-weight: bold;"><br>' + previous51_SuDeposu_Diff + '</span>';
-	      
-          table.rows[3].cells[0].innerHTML = formatTime(next61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + next61_Ardicli_Diff + '</span>';
-          table.rows[3].cells[1].innerHTML = formatTime(next61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + next61_SuDeposu_Diff + '</span>';
-          table.rows[3].cells[2].innerHTML = formatTime(next51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + next51_Ardicli_Diff + '</span>';
-          table.rows[3].cells[3].innerHTML = formatTime(next51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + next51_SuDeposu_Diff + '</span>';
+          const timeMatch = line.match(/^(\d{1,2}):(\d{2})$/);
+          if (timeMatch && route && day && direction) {
+            const hour = Number(timeMatch[1]);
+            const minute = Number(timeMatch[2]);
+            if (hour < 24 && minute < 60) {
+              let total = hour * 60 + minute;
+              if (hour < 4) total += 1440;
+              result[route][day][direction].push(total);
+            }
+            continue;
+          }
 
-          table.rows[4].cells[0].innerHTML = formatTime(nextt61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nextt61_Ardicli_Diff + '</span>';
-          table.rows[4].cells[1].innerHTML = formatTime(nextt61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nextt61_SuDeposu_Diff + '</span>';
-          table.rows[4].cells[2].innerHTML = formatTime(nextt51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nextt51_Ardicli_Diff + '</span>';
-          table.rows[4].cells[3].innerHTML = formatTime(nextt51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nextt51_SuDeposu_Diff + '</span>';
+          if (route && day) {
+            direction = lineKey;
+            result[route][day][direction] ||= [];
+          }
+        }
 
-          table.rows[5].cells[0].innerHTML = formatTime(nexttt61_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nexttt61_Ardicli_Diff + '</span>';
-          table.rows[5].cells[1].innerHTML = formatTime(nexttt61_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nexttt61_SuDeposu_Diff + '</span>';
-          table.rows[5].cells[2].innerHTML = formatTime(nexttt51_Ardicli) + '<span style="color: green; font-weight: bold;"><br>' + nexttt51_Ardicli_Diff + '</span>';
-          table.rows[5].cells[3].innerHTML = formatTime(nexttt51_SuDeposu) + '<span style="color: green; font-weight: bold;"><br>' + nexttt51_SuDeposu_Diff + '</span>';
+        for (const routeData of Object.values(result)) {
+          for (const dayData of Object.values(routeData)) {
+            for (const times of Object.values(dayData)) times.sort((a, b) => a - b);
+          }
+        }
+        return result;
       }
 
-      function formatTime(minutes) {
-          if (minutes === "-") return minutes;
-          const hours = Math.floor(minutes / 60);
-          const mins = minutes % 60;
-          return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+      function getServiceContext(now) {
+        const rawMinutes = now.getHours() * 60 + now.getMinutes();
+        const serviceDate = new Date(now);
+        let currentMinutes = rawMinutes;
+        if (rawMinutes < 240) {
+          serviceDate.setDate(serviceDate.getDate() - 1);
+          currentMinutes += 1440;
+        }
+
+        const weekDay = serviceDate.getDay();
+        const dayType = weekDay === 0 ? "PAZAR" : weekDay === 6 ? "CUMARTESİ" : "HAFTA İÇİ";
+        return { currentMinutes, dayType };
       }
 
-      setInterval(updateSchedule, 1000); // Her dakika güncelle
-      updateSchedule();
+      function formatTime(totalMinutes) {
+        const minutes = totalMinutes % 1440;
+        return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+      }
+
+      function formatDifference(minutes, isPast) {
+        if (minutes === 0) return "şimdi";
+        return isPast ? `${minutes} dk önce` : `${minutes} dk sonra`;
+      }
+
+      function selectedTrips(times, currentMinutes) {
+        if (!times?.length) return [];
+        let previousIndex = -1;
+        for (let index = 0; index < times.length; index++) {
+          if (times[index] <= currentMinutes) previousIndex = index;
+        }
+
+        const trips = [];
+        if (previousIndex >= 0) trips.push({ time: times[previousIndex], past: true });
+        for (let index = previousIndex + 1; index < times.length && trips.filter(t => !t.past).length < 3; index++) {
+          trips.push({ time: times[index], past: false });
+        }
+        return trips;
+      }
+
+      function renderDirection(name, times, currentMinutes) {
+        const trips = selectedTrips(times, currentMinutes);
+        return `
+          <div class="direction">
+            <h3>${name === "JAPON PARKI" ? "Japon Parkı" : "Ardıçlı TOKİ"}</h3>
+            ${trips.length ? `<div class="trip-list">${trips.map(trip => {
+              const difference = Math.abs(trip.time - currentMinutes);
+              return `<div class="trip ${trip.past ? "past" : "next"}">
+                <span class="trip-time">${formatTime(trip.time)}</span>
+                <span class="trip-diff">${formatDifference(difference, trip.past)}</span>
+              </div>`;
+            }).join("")}</div>` : '<div class="empty">Sefer bilgisi yok</div>'}
+          </div>`;
+      }
+
+      function renderSchedule() {
+        const now = new Date();
+        const { currentMinutes, dayType } = getServiceContext(now);
+        document.getElementById("day-type").textContent = dayType === "HAFTA İÇİ" ? "Hafta içi tarifesi" : `${dayType[0]}${dayType.slice(1).toLocaleLowerCase("tr-TR")} tarifesi`;
+
+        if (loadError) return;
+        document.getElementById("routes").innerHTML = Object.entries(ROUTES).map(([route, directions]) => {
+          const daySchedule = schedules[route]?.[dayType] || {};
+          return `<article class="route-card">
+            <h2 class="route-title">${route} Numaralı Hat</h2>
+            <div class="directions ${directions.length === 1 ? "single" : ""}">
+              ${directions.map(direction => renderDirection(direction, daySchedule[direction], currentMinutes)).join("")}
+            </div>
+          </article>`;
+        }).join("");
+      }
+
+      function updateClock() {
+        const now = new Date();
+        document.getElementById("date").textContent = new Intl.DateTimeFormat("tr-TR", {
+          weekday: "long", day: "numeric", month: "long", year: "numeric"
+        }).format(now);
+        document.getElementById("time").textContent = new Intl.DateTimeFormat("tr-TR", {
+          hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+        }).format(now);
+      }
+
+      async function loadSchedule() {
+        try {
+          const response = await fetch(`${DATA_FILE}?v=${Date.now()}`, { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          schedules = parseSchedule(await response.text());
+          document.getElementById("status").textContent = "Tarife otobussaat.txt dosyasından güncel olarak yüklendi.";
+          renderSchedule();
+        } catch (error) {
+          loadError = error.message;
+          const status = document.getElementById("status");
+          status.className = "error";
+          status.textContent = "Tarife dosyası yüklenemedi. Siteyi bir web sunucusu veya GitHub Pages üzerinden açın.";
+        }
+      }
+
+      updateClock();
+      setInterval(updateClock, 1000);
+      setInterval(renderSchedule, 30000);
+      loadSchedule();
     </script>
   </body>
 </html>
