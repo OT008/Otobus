@@ -8,15 +8,60 @@
     <style>
       :root {
         color-scheme: light;
-        --primary: #0f766e;
-        --primary-dark: #115e59;
-        --surface: #ffffff;
-        --background: #f5f7f7;
-        --text: #16302d;
-        --muted: #64748b;
-        --border: #d7e5e3;
-        --past: #dc2626;
-        --next: #15803d;
+        --color-bg: #F7F8FC;
+        --color-surface: #FFFFFF;
+        --color-surface-secondary: #F0F1F7;
+        --color-surface-hover: #E9EAF3;
+        --color-border: #DFE2EC;
+        --color-border-strong: #C8CBD7;
+        --color-text-primary: #25283A;
+        --color-text-secondary: #4F5366;
+        --color-text-muted: #75798C;
+        --color-text-disabled: #A3A6B3;
+        --color-text-on-primary: #FFFFFF;
+        --color-primary: #8E8AC7;
+        --color-primary-light: #E6E4F5;
+        --color-primary-hover: #7D78B7;
+        --color-primary-dark: #6F6AAA;
+        --color-secondary: #76A9D1;
+        --color-secondary-light: #E1EFF8;
+        --color-secondary-dark: #5689B2;
+        --color-success: #4C9B76;
+        --color-success-light: #E2F3E9;
+        --color-error: #C75C68;
+        --color-error-light: #F9E3E6;
+        --color-warning: #C5943F;
+        --color-warning-light: #FFF2D9;
+        --color-info: #528FC4;
+        --color-info-light: #E2F0FA;
+      }
+
+      .theme-purple {
+        --color-primary: #8E8AC7;
+        --color-primary-light: #E6E4F5;
+        --color-primary-hover: #7D78B7;
+        --color-primary-dark: #6F6AAA;
+      }
+
+      .theme-blue {
+        --color-primary: #76A9D1;
+        --color-primary-light: #E1EFF8;
+        --color-primary-hover: #6699C2;
+        --color-primary-dark: #5689B2;
+      }
+
+      .theme-mint {
+        --color-primary: #72B99A;
+        --color-primary-light: #DFF3EA;
+        --color-primary-hover: #62A98A;
+        --color-primary-dark: #52977A;
+      }
+
+      .theme-pink {
+        --color-primary: #D28FAF;
+        --color-primary-light: #F6E1EB;
+        --color-primary-hover: #C27E9F;
+        --color-primary-dark: #B56E90;
       }
 
       * { box-sizing: border-box; }
@@ -26,8 +71,8 @@
         min-height: 100vh;
         padding: 8px 6px 20px;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: var(--text);
-        background: var(--background);
+        color: var(--color-text-primary);
+        background: var(--color-bg);
       }
 
       main { width: min(100%, 920px); margin: 0 auto; }
@@ -35,8 +80,8 @@
       .clock {
         padding: 8px 10px;
         text-align: center;
-        color: white;
-        background: var(--primary);
+        color: var(--color-text-on-primary);
+        background: var(--color-primary);
         border-radius: 8px;
       }
 
@@ -48,7 +93,7 @@
       #status.error {
         margin: 16px 4px 0;
         text-align: center;
-        color: #b91c1c;
+        color: var(--color-error);
         font-size: .9rem;
       }
 
@@ -63,32 +108,32 @@
 
       .route-card {
         overflow: hidden;
-        background: var(--surface);
-        border: 1px solid var(--border);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
         border-radius: 6px;
       }
 
       .route-title {
         margin: 0;
         padding: 5px 8px;
-        color: white;
-        background: var(--primary);
+        color: var(--color-text-on-primary);
+        background: var(--color-primary);
         font-size: .9rem;
         text-align: center;
       }
 
       .directions {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 72px));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         justify-content: space-evenly;
       }
 
       .directions.single {
-        grid-template-columns: minmax(0, 72px);
+        grid-template-columns: minmax(0, 1fr);
         justify-content: center;
       }
       .direction { padding: 6px 2px 7px; min-width: 0; }
-      .direction + .direction { border-left: 1px solid var(--border); }
+      .direction + .direction { border-left: 1px solid var(--color-border); }
 
       .direction h3 {
         min-height: 26px;
@@ -122,8 +167,8 @@
         aspect-ratio: 1;
         min-width: 0;
         padding: 3px;
-        background: white;
-        border: 1px solid var(--border);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
         border-radius: 4px;
       }
 
@@ -140,9 +185,9 @@
         line-height: 1;
       }
 
-      .trip.past .trip-diff { color: var(--past); }
-      .trip.next .trip-diff { color: var(--next); }
-      .empty { padding: 24px 8px; color: var(--muted); text-align: center; }
+      .trip.past .trip-diff { color: var(--color-error); }
+      .trip.next .trip-diff { color: var(--color-success); }
+      .empty { padding: 24px 8px; color: var(--color-text-muted); text-align: center; }
       @media (min-width: 720px) {
         body { padding-top: 20px; }
         .routes { gap: 10px; }
@@ -151,7 +196,7 @@
       }
     </style>
   </head>
-  <body>
+  <body class="theme-blue">
     <main>
       <section class="clock" aria-label="Tarih ve saat">
         <div id="date"></div>
