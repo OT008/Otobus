@@ -24,7 +24,7 @@
       body {
         margin: 0;
         min-height: 100vh;
-        padding: 14px 10px 28px;
+        padding: 8px 6px 20px;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         color: var(--text);
         background: var(--background);
@@ -33,16 +33,16 @@
       main { width: min(100%, 920px); margin: 0 auto; }
 
       .clock {
-        padding: 14px;
+        padding: 8px 10px;
         text-align: center;
         color: white;
         background: var(--primary);
         border-radius: 8px;
       }
 
-      #date { font-size: clamp(1rem, 4vw, 1.25rem); font-weight: 650; }
-      #time { margin-top: 2px; font-size: clamp(2rem, 10vw, 3rem); font-weight: 700; letter-spacing: 1px; }
-      #day-type { margin-top: 3px; font-size: .84rem; opacity: .85; }
+      #date { font-size: clamp(.82rem, 3.5vw, 1.1rem); font-weight: 650; }
+      #time { margin-top: 1px; font-size: clamp(1.65rem, 8vw, 2.5rem); font-weight: 700; letter-spacing: 1px; }
+      #day-type { margin-top: 1px; font-size: .72rem; opacity: .85; }
 
       #status:empty { display: none; }
       #status.error {
@@ -52,35 +52,42 @@
         font-size: .9rem;
       }
 
-      .routes { display: grid; gap: 10px; margin-top: 12px; }
+      .routes {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 7px;
+      }
+
+      .route-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
       .route-card {
         overflow: hidden;
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 8px;
+        border-radius: 6px;
       }
 
       .route-title {
         margin: 0;
-        padding: 8px 12px;
+        padding: 5px 8px;
         color: white;
         background: var(--primary);
-        font-size: 1.05rem;
+        font-size: .9rem;
         text-align: center;
       }
 
       .directions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .directions.single { grid-template-columns: 1fr; }
-      .direction { padding: 11px 8px 12px; min-width: 0; }
+      .direction { padding: 6px 2px 7px; min-width: 0; }
       .direction + .direction { border-left: 1px solid var(--border); }
 
       .direction h3 {
-        min-height: 34px;
-        margin: 0 0 7px;
+        min-height: 26px;
+        margin: 0 0 4px;
         display: grid;
         place-items: center;
-        font-size: clamp(.82rem, 3.7vw, 1rem);
+        font-size: clamp(.58rem, 2.7vw, .82rem);
         text-align: center;
         line-height: 1.2;
       }
@@ -88,14 +95,14 @@
       .trip-list {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 6px;
-        width: min(100%, 96px);
+        gap: 4px;
+        width: min(100%, 54px);
         margin: 0 auto;
       }
 
       .directions.single .trip-list {
         grid-template-columns: 1fr;
-        width: min(100%, 96px);
+        width: min(100%, 54px);
       }
 
       .trip {
@@ -103,24 +110,24 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 3px;
+        gap: 2px;
         aspect-ratio: 1;
         min-width: 0;
-        padding: 5px;
+        padding: 3px;
         background: white;
         border: 1px solid var(--border);
-        border-radius: 6px;
+        border-radius: 4px;
       }
 
       .trip-time {
-        font-size: clamp(.92rem, 4.5vw, 1.2rem);
+        font-size: clamp(.7rem, 3.2vw, .95rem);
         font-weight: 700;
         line-height: 1;
         font-variant-numeric: tabular-nums;
       }
 
       .trip-diff {
-        font-size: clamp(.78rem, 3.6vw, .9rem);
+        font-size: clamp(.62rem, 2.8vw, .78rem);
         font-weight: 750;
         line-height: 1;
       }
@@ -130,8 +137,9 @@
       .empty { padding: 24px 8px; color: var(--muted); text-align: center; }
       @media (min-width: 720px) {
         body { padding-top: 20px; }
-        .routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .route-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+        .routes { gap: 10px; }
+        .trip-list,
+        .directions.single .trip-list { width: min(100%, 68px); }
       }
     </style>
   </head>
