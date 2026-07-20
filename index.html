@@ -149,13 +149,13 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: 4px;
-        width: min(100%, 54px);
+        width: min(100%, 60px);
         margin: 0 auto;
       }
 
       .directions.single .trip-list {
         grid-template-columns: 1fr;
-        width: min(100%, 54px);
+        width: min(100%, 60px);
       }
 
       .trip {
@@ -173,14 +173,14 @@
       }
 
       .trip-time {
-        font-size: clamp(.7rem, 3.2vw, .95rem);
+        font-size: clamp(.76rem, 3.4vw, 1rem);
         font-weight: 700;
         line-height: 1;
         font-variant-numeric: tabular-nums;
       }
 
       .trip-diff {
-        font-size: clamp(.62rem, 2.8vw, .78rem);
+        font-size: clamp(.66rem, 3vw, .82rem);
         font-weight: 750;
         line-height: 1;
       }
@@ -192,7 +192,7 @@
         body { padding-top: 20px; }
         .routes { gap: 10px; }
         .trip-list,
-        .directions.single .trip-list { width: min(100%, 68px); }
+        .directions.single .trip-list { width: min(100%, 72px); }
       }
     </style>
   </head>
@@ -323,9 +323,12 @@
 
       function renderDirection(name, times, currentMinutes) {
         const trips = selectedTrips(times, currentMinutes);
+        const directionLabel = name === "JAPON PARKI"
+          ? "<span>Japon</span><span>Parkı</span>"
+          : "<span>Ardıçlı</span><span>Toki</span>";
         return `
           <div class="direction">
-            <h3>${name === "JAPON PARKI" ? "Japon Parkı" : "Ardıçlı TOKİ"}</h3>
+            <h3>${directionLabel}</h3>
             ${trips.length ? `<div class="trip-list">${trips.map(trip => {
               const difference = Math.abs(trip.time - currentMinutes);
               return `<div class="trip ${trip.past ? "past" : "next"}">
