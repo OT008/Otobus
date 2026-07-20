@@ -45,40 +45,41 @@
       #time { margin-top: 3px; font-size: clamp(2rem, 10vw, 3.25rem); font-weight: 800; letter-spacing: 1px; }
       #day-type { margin-top: 3px; font-size: .84rem; opacity: .85; }
 
-      #status {
-        margin: 18px 4px 8px;
+      #status:empty { display: none; }
+      #status.error {
+        margin: 16px 4px 0;
         text-align: center;
-        color: var(--muted);
-        font-size: .92rem;
+        color: #b91c1c;
+        font-size: .9rem;
       }
 
-      .routes { display: grid; gap: 14px; margin-top: 14px; }
+      .routes { display: grid; gap: 12px; margin-top: 16px; }
 
       .route-card {
         overflow: hidden;
         background: var(--surface);
         border: 1px solid rgba(15, 118, 110, .13);
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
       }
 
       .route-title {
         margin: 0;
-        padding: 11px 14px;
+        padding: 9px 14px;
         color: white;
         background: var(--primary);
-        font-size: 1.3rem;
+        font-size: 1.15rem;
         text-align: center;
       }
 
       .directions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .directions.single { grid-template-columns: 1fr; }
-      .direction { padding: 13px 10px 15px; min-width: 0; }
+      .direction { padding: 11px 8px 12px; min-width: 0; }
       .direction + .direction { border-left: 1px solid var(--border); }
 
       .direction h3 {
-        min-height: 40px;
-        margin: 0 0 9px;
+        min-height: 34px;
+        margin: 0 0 7px;
         display: grid;
         place-items: center;
         font-size: clamp(.82rem, 3.7vw, 1rem);
@@ -86,27 +87,25 @@
         line-height: 1.2;
       }
 
-      .trip-list { display: grid; gap: 7px; }
+      .trip-list { display: grid; gap: 5px; }
       .trip {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 6px;
-        min-height: 43px;
-        padding: 8px 10px;
+        min-height: 38px;
+        padding: 6px 9px;
         background: #f8fafc;
-        border: 1px solid #edf2f7;
-        border-radius: 10px;
+        border-bottom: 1px solid #e7eeed;
+        border-radius: 4px;
       }
 
       .trip-time { font-size: clamp(1rem, 5vw, 1.25rem); font-weight: 800; font-variant-numeric: tabular-nums; }
       .trip-diff { font-size: clamp(.72rem, 3.3vw, .86rem); font-weight: 750; white-space: nowrap; }
       .trip.past .trip-diff { color: var(--past); }
-      .trip.next { background: #f0fdf4; border-color: #bbf7d0; }
+      .trip.next { background: #f0fdf4; border-color: #d8eadc; }
       .trip.next .trip-diff { color: var(--next); }
       .empty { padding: 24px 8px; color: var(--muted); text-align: center; }
-      .error { color: #b91c1c !important; }
-
       @media (min-width: 720px) {
         body { padding-top: 28px; }
         .routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -122,7 +121,7 @@
         <div id="day-type"></div>
       </section>
 
-      <div id="status">Tarife yükleniyor…</div>
+      <div id="status"></div>
       <section id="routes" class="routes" aria-live="polite"></section>
     </main>
 
@@ -220,9 +219,8 @@
         return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
       }
 
-      function formatDifference(minutes, isPast) {
-        if (minutes === 0) return "şimdi";
-        return isPast ? `${minutes} dk önce` : `${minutes} dk sonra`;
+      function formatDifference(minutes) {
+        return minutes === 0 ? "0" : String(minutes);
       }
 
       function selectedTrips(times, currentMinutes) {
@@ -249,7 +247,7 @@
               const difference = Math.abs(trip.time - currentMinutes);
               return `<div class="trip ${trip.past ? "past" : "next"}">
                 <span class="trip-time">${formatTime(trip.time)}</span>
-                <span class="trip-diff">${formatDifference(difference, trip.past)}</span>
+                <span class="trip-diff">${formatDifference(difference)}</span>
               </div>`;
             }).join("")}</div>` : '<div class="empty">Sefer bilgisi yok</div>'}
           </div>`;
@@ -287,7 +285,6 @@
           const response = await fetch(`${DATA_FILE}?v=${Date.now()}`, { cache: "no-store" });
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           schedules = parseSchedule(await response.text());
-          document.getElementById("status").textContent = "Tarife otobussaat.txt dosyasından güncel olarak yüklendi.";
           renderSchedule();
         } catch (error) {
           loadError = error.message;
