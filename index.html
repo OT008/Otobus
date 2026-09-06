@@ -253,11 +253,16 @@
         let direction = "";
 
         for (const rawLine of text.split(/\r?\n/)) {
-          const line = repairTurkish(rawLine).trim();
+          const line = repairTurkish(rawLine)
+            .replace(/&#x20;|&nbsp;/gi, " ")
+            .replace(/\\\s*$/, "")
+            .replace(/^\*\*(.*?)\*\*$/, "$1")
+            .trim();
           if (!line) continue;
 
-          if (/^\d+$/.test(line)) {
-            route = line;
+          const routeMatch = line.match(/^(\d+)\s*(?:-.*)?$/);
+          if (routeMatch) {
+            route = routeMatch[1];
             day = "";
             direction = "";
             result[route] ||= {};
