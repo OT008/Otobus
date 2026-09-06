@@ -201,6 +201,7 @@
 
       .trip.past .trip-diff { color: var(--color-error); }
       .trip.next .trip-diff { color: var(--color-success); }
+      .trip-day { font-size: .6rem; line-height: 1; color: var(--color-text-secondary); }
       .empty { padding: 24px 8px; color: var(--color-text-muted); text-align: center; }
       @media (min-width: 720px) {
         body { padding-top: 20px; }
@@ -308,7 +309,7 @@
 
         const weekDay = serviceDate.getDay();
         const dayType = weekDay === 0 ? "PAZAR" : weekDay === 6 ? "CUMARTESİ" : "HAFTA İÇİ";
-        return { currentMinutes, dayType };
+        return { currentMinutes, dayType, serviceDate };
       }
 
       function formatTime(totalMinutes) {
@@ -335,8 +336,27 @@
         return trips;
       }
 
-      function renderDirection(name, times, currentMinutes) {
+      function firstTripNextDay(route, direction, serviceDate, now) {
+        const nextDate = new Date(serviceDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+        const weekDay = nextDate.getDay();
+        const dayType = weekDay === 0 ? "PAZAR" : weekDay === 6 ? "CUMARTESİ" : "HAFTA İÇİ";
+        const times = schedules[route]?.[dayType]?.[direction];
+        if (!times?.length) return null;
+
+        const departureDate = new Date(nextDate);
+        departureDate.setDate(departureDate.getDate() + Math.floor(times[0] / 1440));
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dayLabel = departureDate.toDateString() === now.toDateString() ? "Bugün"
+          : departureDate.toDateString() === tomorrow.toDateString() ? "Yarın"
+          : new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short" }).format(departureDate);
+        return { time: times[0] + 1440, past: false, dayLabel };
+      }
+
+      function renderDirection(name, times, currentMinutes, nextDayTrip = null) {
         const trips = selectedTrips(times, currentMinutes);
+        if (trips.length && !trips.some(trip => !trip.past) && nextDayTrip) trips.push(nextDayTrip);
         const directionLabel = name === "JAPON PARKI"
           ? "<span>Japon</span><span>Parkı</span>"
           : "<span>Ardıçlı</span><span>Toki</span>";
@@ -346,6 +366,7 @@
             ${trips.length ? `<div class="trip-list">${trips.map(trip => {
               const difference = Math.abs(trip.time - currentMinutes);
               return `<div class="trip ${trip.past ? "past" : "next"}">
+                ${trip.dayLabel ? `<span class="trip-day">${trip.dayLabel}</span>` : ""}
                 <span class="trip-time">${formatTime(trip.time)}</span>
                 <span class="trip-diff">${formatDifference(difference)}</span>
               </div>`;
@@ -355,7 +376,7 @@
 
       function renderSchedule() {
         const now = new Date();
-        const { currentMinutes, dayType } = getServiceContext(now);
+        const { currentMinutes, dayType, serviceDate } = getServiceContext(now);
         document.getElementById("day-type").textContent = dayType === "HAFTA İÇİ" ? "Hafta içi tarifesi" : `${dayType[0]}${dayType.slice(1).toLocaleLowerCase("tr-TR")} tarifesi`;
 
         if (loadError) return;
@@ -364,7 +385,7 @@
           return `<article class="route-card">
             <h2 class="route-title">Hat ${route}</h2>
             <div class="directions ${directions.length === 1 ? "single" : ""}">
-              ${directions.map(direction => renderDirection(direction, daySchedule[direction], currentMinutes)).join("")}
+              ${directions.map(direction => renderDirection(direction, daySchedule[direction], currentMinutes, firstTripNextDay(route, direction, serviceDate, now))).join("")}
             </div>
           </article>`;
         }).join("");
